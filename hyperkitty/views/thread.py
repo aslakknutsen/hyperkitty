@@ -35,7 +35,7 @@ from django.core.exceptions import SuspiciousOperation
 from hyperkitty.models import Tag, Favorite
 from forms import SearchForm, AddTagForm, ReplyForm
 from hyperkitty.lib import get_months, get_store, stripped_subject
-from hyperkitty.lib.voting import set_message_votes
+from hyperkitty.lib.voting import set_messages_votes
 
 
 def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
@@ -54,10 +54,11 @@ def thread_index(request, mlist_fqdn, threadid, month=None, year=None):
         sort_mode = "thread"
         emails = thread.emails_by_reply
 
+    # Extract all the votes for the whole thread
+    set_messages_votes(emails, threadid, request.user)
+
     participants = {}
     for email in emails:
-        # Extract all the votes for this message
-        set_message_votes(email, request.user)
 
         # Statistics on how many participants and messages this month
         participants[email.sender_name] = email.sender_email

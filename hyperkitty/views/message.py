@@ -116,7 +116,7 @@ def vote(request, mlist_fqdn, message_id_hash):
                                 content_type="text/plain", status=403)
     except Rating.DoesNotExist:
         if value != 0:
-            v = Rating(list_address=mlist_fqdn, messageid=message_id_hash,
+            v = Rating(list_address=mlist_fqdn, threadid=message.thread_id, messageid=message_id_hash,
                        vote=value)
             v.user = request.user
         else:

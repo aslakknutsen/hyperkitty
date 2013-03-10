@@ -30,9 +30,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import formats
 from django.utils.dateformat import format as date_format
 
-from hyperkitty.models import Tag, Favorite
+from hyperkitty.models import Tag, Favorite, Rating
 from hyperkitty.lib import get_months, get_store, get_display_dates, daterange
-from hyperkitty.lib.voting import get_votes
+from hyperkitty.lib.voting import set_votes
 from forms import SearchForm
 
 
@@ -79,55 +79,39 @@ def _thread_list(request, mlist, threads, template_name='thread_list.html', extr
     search_form = SearchForm(auto_id=False)
 
     participants = set()
+    thread_ids = [v.thread_id for v in threads]
+
+    #Votes
+    ratings = {}
+    for rating in Rating.objects.filter(threadid__in=thread_ids):
+        tmp = ratings.get(rating.threadid, [])
+        tmp.append(rating)
+        ratings[rating.threadid] = tmp
+
+    # Favorites
+    favorites = {}
+    if request.user.is_authenticated():
+        favorites = dict((x.threadid, True) for x in Favorite.objects.filter(
+            list_address=mlist.name,
+            threadid__in=thread_ids,
+            user=request.user))
+
+    # Tags
+    tags = dict((x.threadid, x) for x in Tag.objects.filter(
+        threadid__in=thread_ids,
+        list_address=mlist.name))
+
     for thread in threads:
         participants.update(thread.participants)
 
         # Votes
-        totalvotes = 0
-        totallikes = 0
-        totaldislikes = 0
-        for message_id_hash in thread.email_id_hashes:
-            likes, dislikes, myvote = get_votes(message_id_hash, request.user)
-            totallikes = totallikes + likes
-            totalvotes = totalvotes + likes + dislikes
-            totaldislikes = totaldislikes + dislikes
-            if message_id_hash == thread.thread_id:
-                # Starting email: same id as the thread_id
-                thread.myvote = myvote
-        try:
-            thread.likes = totallikes / totalvotes
-        except ZeroDivisionError:
-            thread.likes = 0
-        try:
-            thread.dislikes = totaldislikes / totalvotes
-        except ZeroDivisionError:
-            thread.dislikes = 0
-        thread.likestatus = "neutral"
-        if thread.likes - thread.dislikes >= 10:
-            thread.likestatus = "likealot"
-        elif thread.likes - thread.dislikes > 0:
-            thread.likestatus = "like"
-        #elif thread.likes - thread.dislikes < 0:
-        #    thread.likestatus = "dislike"
+        set_votes(thread, ratings.get(thread.thread_id, []), request.user)
 
         # Favorites
-        thread.favorite = False
-        if request.user.is_authenticated():
-            try:
-                Favorite.objects.get(list_address=mlist.name,
-                                     threadid=thread.thread_id,
-                                     user=request.user)
-            except Favorite.DoesNotExist:
-                pass
-            else:
-                thread.favorite = True
+        thread.favorite = favorites.get(thread.thread_id, False)
 
         # Tags
-        try:
-            thread.tags = Tag.objects.filter(threadid=thread.thread_id,
-                                             list_address=mlist.name)
-        except Tag.DoesNotExist:
-            thread.tags = []
+        thread.tags = tags.get(thread.thread_id, [])
 
     all_threads = threads
     paginator = Paginator(threads, 10)
