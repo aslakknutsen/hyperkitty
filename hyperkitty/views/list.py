@@ -78,6 +78,18 @@ def _thread_list(request, mlist, threads, template_name='thread_list.html', extr
     store = get_store(request)
     search_form = SearchForm(auto_id=False)
 
+    all_threads = threads
+    paginator = Paginator(threads, 10)
+    page_num = request.GET.get('page')
+    try:
+        threads = paginator.page(page_num)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        threads = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        threads = paginator.page(paginator.num_pages)
+
     participants = set()
     thread_ids = [v.thread_id for v in threads]
 
@@ -112,18 +124,6 @@ def _thread_list(request, mlist, threads, template_name='thread_list.html', extr
 
         # Tags
         thread.tags = tags.get(thread.thread_id, [])
-
-    all_threads = threads
-    paginator = Paginator(threads, 10)
-    page_num = request.GET.get('page')
-    try:
-        threads = paginator.page(page_num)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        threads = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        threads = paginator.page(paginator.num_pages)
 
     flash_messages = []
     flash_msg = request.GET.get("msg")
