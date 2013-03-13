@@ -19,11 +19,12 @@
 # Author: Aamir Khan <syst3m.w0rm@gmail.com>
 # Author: Aurelien Bompard <abompard@fedoraproject.org>
 #
-
-from django.conf.urls import patterns, include, url
-from django.conf import settings
 from django.views.generic.base import TemplateView
-from api import ListResource, EmailResource, ThreadResource, SearchResource
+from django.conf.urls import patterns, include, url
+from api import ListsResource, ListResource, AttachmentRawResource, \
+    EmailResource, EmailRawResource, ThreadsResource, ThreadResource, \
+    SearchResource, ListStatResource, \
+    CompatEmailResource, CompatThreadResource, CompatSearchResource
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib.auth.views import login as login_view
@@ -36,8 +37,8 @@ admin.autodiscover()
 from hyperkitty.views import TextTemplateView
 
 
-
-urlpatterns = patterns('hyperkitty.views',
+urlpatterns = patterns(
+    'hyperkitty.views',
     # Index
     url(r'^/$', 'pages.index', name='index'),
     url(r'^$', 'pages.index', name='root'),
@@ -93,14 +94,35 @@ urlpatterns = patterns('hyperkitty.views',
 
     # REST API
     url(r'^api/$', TemplateView.as_view(template_name="api.html")),
-    url(r'^api/list\/',
-        ListResource.as_view(), name="api_list"),
-    url(r'^api/email\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<messageid>.*)/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/(?P<counter>\d+)/',
+        AttachmentRawResource.as_view(), name="api_email_attachment"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/raw/',
+        EmailRawResource.as_view(), name="api_email_raw"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/',
         EmailResource.as_view(), name="api_email"),
-    url(r'^api/thread\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<threadid>.*)/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/(?P<day>\d\d?)/',
+        ThreadsResource.as_view(), name="api_threads_with_day"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/',
+        ThreadsResource.as_view(), name="api_threads_with_month"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<threadid>.*)/',
         ThreadResource.as_view(), name="api_thread"),
-    url(r'^api/search\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<field>.*)\/(?P<keyword>.*)/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/search/(?P<field>.*)/(?P<keyword>.*)/',
         SearchResource.as_view(), name="api_search"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/stat/',
+        ListStatResource.as_view(), name="api_list_stat"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/$',
+        ListResource.as_view(), name="api_list"),
+    url(r'^api/list/$',
+        ListsResource.as_view(), name="api_lists"),
+
+    # Compat with previous REST API (cause redirect)
+
+    url(r'^api/email\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<messageid>.*)/',
+        CompatEmailResource.as_view(), name="compat_api_email"),
+    url(r'^api/thread\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<threadid>.*)/',
+        CompatThreadResource.as_view(), name="compat_api_thread"),
+    url(r'^api/search\/(?P<mlist_fqdn>[^/@]+@[^/@]+)\/(?P<field>.*)\/(?P<keyword>.*)/',
+        CompatSearchResource.as_view(), name="compat_api_search"),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -126,4 +148,3 @@ urlpatterns = patterns('hyperkitty.views',
 )
 #) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += staticfiles_urlpatterns()
-
