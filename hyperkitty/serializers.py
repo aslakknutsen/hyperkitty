@@ -157,7 +157,7 @@ class AttachmentSerializer(serializers.Serializer):
     links = CustomLinks(
         {
             "raw": CustomLink(
-                "api_email_attachment",
+                "api_message_attachment",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "message_id",
@@ -166,7 +166,7 @@ class AttachmentSerializer(serializers.Serializer):
         })
 
 
-class EmailSerializer(serializers.Serializer):
+class MessageSerializer(serializers.Serializer):
     sender_name = serializers.CharField()
     sender_email = serializers.EmailField()
     subject = serializers.CharField()
@@ -180,19 +180,19 @@ class EmailSerializer(serializers.Serializer):
     links = CustomLinks(
         {
             "self": CustomLink(
-                "api_email",
+                "api_message",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "message_id"
                 }),
             "in_reply_to": CustomLink(
-                "api_email",
+                "api_message",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "in_reply_to"
                 }),
             "raw": CustomLink(
-                "api_email_raw",
+                "api_message_raw",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "message_id"
@@ -206,7 +206,7 @@ class EmailSerializer(serializers.Serializer):
         })
 
 
-class EmailLinkSerializer(serializers.Serializer):
+class MessageLinkSerializer(serializers.Serializer):
     sender_name = serializers.CharField()
     sender_email = serializers.EmailField()
     date = serializers.DateTimeField()
@@ -214,19 +214,19 @@ class EmailLinkSerializer(serializers.Serializer):
     links = CustomLinks(
         {
             "self": CustomLink(
-                "api_email",
+                "api_message",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "message_id"
                 }),
             "in_reply_to": CustomLink(
-                "api_email",
+                "api_message",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "in_reply_to"
                 }),
             "raw": CustomLink(
-                "api_email_raw",
+                "api_message_raw",
                 {
                     "mlist_fqdn": "list_name",
                     "messageid": "message_id"
@@ -243,10 +243,10 @@ class EmailLinkSerializer(serializers.Serializer):
 class ThreadSerializer(serializers.Serializer):
     subject = serializers.CharField()
     last_active = serializers.DateTimeField(source="date_active")
-    first_post = EmailLinkSerializer(source="starting_email")
+    first_post = MessageLinkSerializer(source="starting_email")
     list = ListLinkSerializer(source="*")
     participants = serializers.CharField()
-    emails = EmailLinkSerializer(source="emails_by_reply")
+    messages = MessageLinkSerializer(source="emails_by_reply")
 
 
 class PaginatedHKSerializer(pagination.PaginationSerializer):
@@ -264,9 +264,9 @@ class PaginatedThreadSerializer(PaginatedHKSerializer):
         object_serializer_class = ThreadSummarySerializer
 
 
-class PaginatedEmailLinkSerializer(PaginatedHKSerializer):
+class PaginatedMessageLinkSerializer(PaginatedHKSerializer):
     """
-    Serializes page objects of emails.
+    Serializes page objects of messages.
     """
     class Meta:
-        object_serializer_class = EmailLinkSerializer
+        object_serializer_class = MessageLinkSerializer

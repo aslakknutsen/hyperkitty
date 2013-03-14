@@ -4,10 +4,10 @@
 	<h2>REST API</h2>
 	<p>
 		HyperKitty comes with a small REST API allowing you to programatically retrieve 
-		emails and information.
+		messages and information.
 	</p>
 
-	<div class="odd" style="padding-left: 1em">
+	<div class="odd" style="padding-left: 1<">
 		<h3>Formats</h3>
 		<p>
 			This REST API can return the information into several formats.
@@ -50,13 +50,13 @@ latest activity.
 		</p>
 	</div>
 	<div class="even" style="padding-left: 1em">
-		<h3>Email <a>/api/list/&lt;list name&gt;/email/&lt;Message-ID&gt;/</a></h3>
+		<h3>Message <a>/api/list/&lt;list name&gt;/message/&lt;Message-ID&gt;/</a></h3>
 		<p>
-Using the address /api/list/&lt;list name&gt;/email/&lt;Message-ID&gt;/ you will be able to
-retrieve the information known about a specific email on the specified mailing-list.
+Using the address /api/list/&lt;list name&gt;/message/&lt;Message-ID&gt;/ you will be able to
+retrieve the information known about a specific message on the specified mailing-list.
 		</p>
-		<p> For example: <a href="{% url 'api_email' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}?format=api">
-			{% url 'api_email' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}
+		<p> For example: <a href="{% url 'api_message' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}?format=api">
+			{% url 'api_message' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}
 		</a>
 		</p>
 	</div>
@@ -64,7 +64,7 @@ retrieve the information known about a specific email on the specified mailing-l
 		<h3>Thread <a>/api/list/&lt;list name&gt;/thread/&lt;ThreadID&gt;/</a></h3>
 		<p>
 Using the address /api/list/&lt;list name&gt;/thread/&lt;Message-ID&gt;/ you will be able to
-retrieve the all the email for a specific thread on the specified mailing-list.
+retrieve the all the messages for a specific thread on the specified mailing-list.
 		</p>
 		<p> For example: <a href="{% url 'api_thread' mlist_fqdn='devel@fp.o' threadid='13129854572893334' %}?format=api">
 			{% url 'api_thread' mlist_fqdn='devel@fp.o' threadid='13129854572893334' %}
@@ -75,7 +75,7 @@ retrieve the all the email for a specific thread on the specified mailing-list.
 		<h3>Search <a>/api/list/&lt;list name&gt;/search/&lt;field&gt;/&lt;keyword&gt;/</a></h3>
 		<p>
 Using the address /api/list/&lt;list name&gt;/search/&lt;field&gt;/&lt;keyword&gt;/ you will be able to
-search for all emails of the specified mailing-list containing the provided keyword in the given field.
+search for all messages of the specified mailing-list containing the provided keyword in the given field.
 		</p>
 		<p>The list of available field is:</p>
 		<ul>

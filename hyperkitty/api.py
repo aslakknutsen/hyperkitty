@@ -148,14 +148,14 @@ class AttachmentRawResource(APIView):
             return HttpResponse(attachment.content, mimetype=attachment.content_type)
 
 
-class EmailResource(APIView):
+class MessageResource(APIView):
     """
-    Resource used to retrieve emails from the archives using the REST API.
+    Resource used to retrieve messagess from the archives using the REST API.
 
     :param mlist_fqdn: Fully qualified List name
     :param messageid: Fully qualified Message id
 
-    :status 404: If no Email is found
+    :status 404: If no Message is found
     """
 
     def get(self, request, mlist_fqdn, messageid):
@@ -165,17 +165,17 @@ class EmailResource(APIView):
         if not email:
             return Response(status=404)
         else:
-            return Response(EmailSerializer(email, context={'request': request}).data)
+            return Response(MessageSerializer(email, context={'request': request}).data)
 
 
-class EmailRawResource(APIView):
+class MessageRawResource(APIView):
     """
     Resource used to retrieve RAW plain/text message using the REST API.
 
     :param mlist_fqdn: Fully qualified List name
     :param messageid: Fully qualified Message id
 
-    :status 404: If no Raw email is found
+    :status 404: If no Raw Message is found
     """
 
     def get(self, request, mlist_fqdn, messageid):
@@ -252,15 +252,15 @@ class SearchResource(APIView):
     :param mlist_fqdn: Fully qualified List name
     :param field: Field to search. Allowed values are:
                     Subject:
-                        The Email Subject line
+                        The Message Subject line
                     Content:
-                        The Email Body
+                        The Message Body
                     SubjectContent:
-                        The Email Subject line and Body
+                        The Message Subject line and Body
                     From:
-                        The Senders Email or Name
+                        The Senders Address or Name
 
-    :status 404: If no emails are found
+    :status 404: If no Messages are found
     """
 
     def get(self, request, mlist_fqdn, field, keyword):
@@ -296,7 +296,7 @@ class SearchResource(APIView):
             return Response(status=404)
         else:
             return Response(
-                PaginatedEmailLinkSerializer(
+                PaginatedMessageLinkSerializer(
                     instance=threads, context={'request': request}).data)
 
 
@@ -306,7 +306,7 @@ class CompatEmailResource(APIView):
     """
     Compatibility Resource for old EmailResource API.
 
-    See EmailResource.
+    See MessageResource.
 
     Redirects to new URL.
     """
@@ -316,7 +316,7 @@ class CompatEmailResource(APIView):
             "mlist_fqdn": mlist_fqdn,
             "messageid": messageid
         }
-        return HttpResponseRedirect(reverse("api_email", kwargs=args, request=request))
+        return HttpResponseRedirect(reverse("api_message", kwargs=args, request=request))
 
 
 class CompatThreadResource(APIView):

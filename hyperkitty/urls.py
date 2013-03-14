@@ -22,7 +22,7 @@
 from django.views.generic.base import TemplateView
 from django.conf.urls import patterns, include, url
 from api import ListsResource, ListResource, AttachmentRawResource, \
-    EmailResource, EmailRawResource, ThreadsResource, ThreadResource, \
+    MessageResource, MessageRawResource, ThreadsResource, ThreadResource, \
     SearchResource, ListStatResource, \
     CompatEmailResource, CompatThreadResource, CompatSearchResource
 
@@ -94,12 +94,12 @@ urlpatterns = patterns(
 
     # REST API
     url(r'^api/$', TemplateView.as_view(template_name="api.html")),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/(?P<counter>\d+)/',
-        AttachmentRawResource.as_view(), name="api_email_attachment"),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/raw/',
-        EmailRawResource.as_view(), name="api_email_raw"),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/email/(?P<messageid>.*)/',
-        EmailResource.as_view(), name="api_email"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/(?P<counter>\d+)/',
+        AttachmentRawResource.as_view(), name="api_message_attachment"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/raw/',
+        MessageRawResource.as_view(), name="api_message_raw"),
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/',
+        MessageResource.as_view(), name="api_message"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/(?P<day>\d\d?)/',
         ThreadsResource.as_view(), name="api_threads_with_day"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/',
