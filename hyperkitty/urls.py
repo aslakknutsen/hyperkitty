@@ -51,9 +51,9 @@ urlpatterns = patterns(
 
 
     # List archives and overview
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/(?P<year>\d{4})/(?P<month>\d\d?)/(?P<day>\d\d?)/$',
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/(?P<day>\d\d?)/$',
         'list.archives', name='archives_with_day'),
-    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/(?P<year>\d{4})/(?P<month>\d\d?)/$',
+    url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/$',
         'list.archives', name='archives_with_month'),
     url(r'^list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/latest$',
         'list.archives', name='archives_latest'),
@@ -94,11 +94,11 @@ urlpatterns = patterns(
 
     # REST API
     url(r'^api/$', TemplateView.as_view(template_name="api.html")),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/(?P<counter>\d+)/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<message_id_hash>.*)/attachment/(?P<counter>\d+)/.*',
         AttachmentRawResource.as_view(), name="api_message_attachment"),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/raw/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<message_id_hash>.*)/raw/',
         MessageRawResource.as_view(), name="api_message_raw"),
-    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<messageid>.*)/',
+    url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/message/(?P<message_id_hash>.*)/',
         MessageResource.as_view(), name="api_message"),
     url(r'^api/list/(?P<mlist_fqdn>[^/@]+@[^/@]+)/thread/(?P<year>\d{4})/(?P<month>\d\d?)/(?P<day>\d\d?)/',
         ThreadsResource.as_view(), name="api_threads_with_day"),

@@ -38,9 +38,9 @@ retrieve the information known about all the mailing-lists.
 		</p>
 	</div>
 	<div class="even" style="padding-left: 1em">
-		<h3>List <a>/api/list/&lt;list name&gt;/</a></h3>
+		<h3>List <a>/api/list/&lt;List-Name&gt;/</a></h3>
 		<p>
-Using the address /api/list//&lt;list name&gt;/ you will be able to
+Using the address /api/list//&lt;List-Name&gt;/ you will be able to
 retrieve the information known about a specific mailing-lists including 
 latest activity.
 		</p>
@@ -50,20 +50,20 @@ latest activity.
 		</p>
 	</div>
 	<div class="even" style="padding-left: 1em">
-		<h3>Message <a>/api/list/&lt;list name&gt;/message/&lt;Message-ID&gt;/</a></h3>
+		<h3>Message <a>/api/list/&lt;List-Name&gt;/message/&lt;Message-ID-Hash&gt;/</a></h3>
 		<p>
-Using the address /api/list/&lt;list name&gt;/message/&lt;Message-ID&gt;/ you will be able to
+Using the address /api/list/&lt;List-Name&gt;/message/&lt;Message-ID-Hash&gt;/ you will be able to
 retrieve the information known about a specific message on the specified mailing-list.
 		</p>
-		<p> For example: <a href="{% url 'api_message' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}?format=api">
-			{% url 'api_message' mlist_fqdn='devel@fp.o' messageid='13129854572893334' %}
+		<p> For example: <a href="{% url 'api_message' mlist_fqdn='devel@fp.o' message_id_hash='13129854572893334' %}?format=api">
+			{% url 'api_message' mlist_fqdn='devel@fp.o' message_id_hash='13129854572893334' %}
 		</a>
 		</p>
 	</div>
 	<div class="odd" style="padding-left: 1em">
-		<h3>Thread <a>/api/list/&lt;list name&gt;/thread/&lt;ThreadID&gt;/</a></h3>
+		<h3>Thread <a>/api/list/&lt;List-Name&gt;/thread/&lt;ThreadID&gt;/</a></h3>
 		<p>
-Using the address /api/list/&lt;list name&gt;/thread/&lt;Message-ID&gt;/ you will be able to
+Using the address /api/list/&lt;List-Name&gt;/thread/&lt;Thread-ID&gt;/ you will be able to
 retrieve the all the messages for a specific thread on the specified mailing-list.
 		</p>
 		<p> For example: <a href="{% url 'api_thread' mlist_fqdn='devel@fp.o' threadid='13129854572893334' %}?format=api">
@@ -72,9 +72,9 @@ retrieve the all the messages for a specific thread on the specified mailing-lis
 		</p>
 	</div>
 		<div class="even" style="padding-left: 1em">
-		<h3>Search <a>/api/list/&lt;list name&gt;/search/&lt;field&gt;/&lt;keyword&gt;/</a></h3>
+		<h3>Search <a>/api/list/&lt;List-Name&gt;/search/&lt;Field&gt;/&lt;Keyword&gt;/</a></h3>
 		<p>
-Using the address /api/list/&lt;list name&gt;/search/&lt;field&gt;/&lt;keyword&gt;/ you will be able to
+Using the address /api/list/&lt;List-Name&gt;/search/&lt;Field&gt;/&lt;Keyword&gt;/ you will be able to
 search for all messages of the specified mailing-list containing the provided keyword in the given field.
 		</p>
 		<p>The list of available field is:</p>

@@ -32,9 +32,15 @@ class CustomLink(Field):
         resolved_args = {}
         for k in self.args:
             v = self.args.get(k)
-            value = getattr(obj, v)
-            if value is None:
-                return None
+
+            # Support sub expressions (parent.child.child)
+            tmp_obj = obj
+            for component in v.split('.'):
+                value = getattr(tmp_obj, component)
+                if value is None:
+                    return None
+                tmp_obj = value
+
             resolved_args[k] = value
 
         request = self.context['request']
@@ -160,7 +166,7 @@ class AttachmentSerializer(serializers.Serializer):
                 "api_message_attachment",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "message_id",
+                    "message_id_hash": "email.message_id_hash",
                     "counter": "counter"
                 })
         })
@@ -183,19 +189,19 @@ class MessageSerializer(serializers.Serializer):
                 "api_message",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "message_id"
+                    "message_id_hash": "message_id_hash"
                 }),
             "in_reply_to": CustomLink(
                 "api_message",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "in_reply_to"
+                    "message_id_hash": "reply_to.message_id_hash"
                 }),
             "raw": CustomLink(
                 "api_message_raw",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "message_id"
+                    "message_id_hash": "message_id_hash"
                 }),
             "thread": CustomLink(
                 "api_thread",
@@ -217,19 +223,13 @@ class MessageLinkSerializer(serializers.Serializer):
                 "api_message",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "message_id"
-                }),
-            "in_reply_to": CustomLink(
-                "api_message",
-                {
-                    "mlist_fqdn": "list_name",
-                    "messageid": "in_reply_to"
+                    "message_id_hash": "message_id_hash"
                 }),
             "raw": CustomLink(
                 "api_message_raw",
                 {
                     "mlist_fqdn": "list_name",
-                    "messageid": "message_id"
+                    "message_id_hash": "message_id_hash"
                 }),
             "thread": CustomLink(
                 "api_thread",

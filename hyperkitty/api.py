@@ -132,16 +132,22 @@ class AttachmentRawResource(APIView):
     Resource used to retrieve RAW attachments using the REST API.
 
     :param mlist_fqdn: Fully qualified List name
-    :param messageid: Fully qualified Message id
+    :param messageid: Message ID Hash
     :param counter: The counter within the message for this attachment
 
     :status 404: If no attchment is found
     """
 
-    def get(self, request, mlist_fqdn, messageid, counter):
+    def get(self, request, mlist_fqdn, message_id_hash, counter):
         store = get_store(request)
-        attachment = store.get_attachment_by_counter(mlist_fqdn, messageid, int(counter))
 
+        # Since the API is mapped to message_id_hash we need to lookup the
+        # message to find the message_id
+        email = store.get_message_by_hash_from_list(mlist_fqdn, message_id_hash)
+        if not email:
+            return Response(status=404)
+
+        attachment = store.get_attachment_by_counter(mlist_fqdn, email.message_id, int(counter))
         if not attachment:
             return Response(status=404)
         else:
@@ -153,19 +159,25 @@ class MessageResource(APIView):
     Resource used to retrieve messagess from the archives using the REST API.
 
     :param mlist_fqdn: Fully qualified List name
-    :param messageid: Fully qualified Message id
+    :param message_id_hash: Message ID Hash
 
     :status 404: If no Message is found
     """
 
-    def get(self, request, mlist_fqdn, messageid):
+    def get(self, request, mlist_fqdn, message_id_hash):
         store = get_store(request)
-        email = store.get_message_by_id_from_list(mlist_fqdn, messageid)
+        email = store.get_message_by_hash_from_list(mlist_fqdn, message_id_hash)
 
         if not email:
             return Response(status=404)
+
+        # Lookup message_id_hash for reply to message
+        if email.in_reply_to:
+            email.reply_to = store.get_message_by_id_from_list(mlist_fqdn, email.in_reply_to)
         else:
-            return Response(MessageSerializer(email, context={'request': request}).data)
+            email.reply_to = None
+
+        return Response(MessageSerializer(email, context={'request': request}).data)
 
 
 class MessageRawResource(APIView):
@@ -173,14 +185,14 @@ class MessageRawResource(APIView):
     Resource used to retrieve RAW plain/text message using the REST API.
 
     :param mlist_fqdn: Fully qualified List name
-    :param messageid: Fully qualified Message id
+    :param message_id_hash: Message ID Hash
 
     :status 404: If no Raw Message is found
     """
 
-    def get(self, request, mlist_fqdn, messageid):
+    def get(self, request, mlist_fqdn, message_id_hash):
         store = get_store(request)
-        email = store.get_message_by_id_from_list(mlist_fqdn, messageid)
+        email = store.get_message_by_hash_from_list(mlist_fqdn, message_id_hash)
         if not email:
             return Response(status=404)
         else:
@@ -292,7 +304,7 @@ class SearchResource(APIView):
             # If page is out of range (e.g. 9999), deliver last page of results.
             threads = paginator.page(paginator.num_pages)
 
-        if not threads:
+        if paginator.count == 0:
             return Response(status=404)
         else:
             return Response(
@@ -312,9 +324,14 @@ class CompatEmailResource(APIView):
     """
 
     def get(self, request, mlist_fqdn, messageid):
+        store = get_store(request)
+        email = store.get_message_by_id_from_list(mlist_fqdn, messageid)
+        if not email:
+            return Response(status=404)
+
         args = {
             "mlist_fqdn": mlist_fqdn,
-            "messageid": messageid
+            "message_id_hash": email.message_id_hash
         }
         return HttpResponseRedirect(reverse("api_message", kwargs=args, request=request))
 
