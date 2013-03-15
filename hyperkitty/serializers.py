@@ -172,9 +172,13 @@ class AttachmentSerializer(serializers.Serializer):
         })
 
 
+class AuthorSerializer(serializers.Serializer):
+    name = serializers.CharField(source="sender_name")
+    email = serializers.CharField(source="sender_email")
+
+
 class MessageSerializer(serializers.Serializer):
-    sender_name = serializers.CharField()
-    sender_email = serializers.EmailField()
+    author = AuthorSerializer(source="*")
     subject = serializers.CharField()
     date = serializers.DateTimeField()
     timezone = serializers.CharField()
@@ -213,8 +217,7 @@ class MessageSerializer(serializers.Serializer):
 
 
 class MessageLinkSerializer(serializers.Serializer):
-    sender_name = serializers.CharField()
-    sender_email = serializers.EmailField()
+    author = AuthorSerializer(source="*")
     date = serializers.DateTimeField()
     timezone = serializers.CharField()
     links = CustomLinks(
