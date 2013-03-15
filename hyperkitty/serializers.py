@@ -243,6 +243,11 @@ class MessageLinkSerializer(serializers.Serializer):
         })
 
 
+class MessageSearchSerializer(MessageLinkSerializer):
+    subject = serializers.CharField()
+    content = serializers.CharField()
+
+
 class ThreadSerializer(serializers.Serializer):
     subject = serializers.CharField()
     last_active = serializers.DateTimeField(source="date_active")
@@ -267,9 +272,9 @@ class PaginatedThreadSerializer(PaginatedHKSerializer):
         object_serializer_class = ThreadSummarySerializer
 
 
-class PaginatedMessageLinkSerializer(PaginatedHKSerializer):
+class PaginatedMessageSearchSerializer(PaginatedHKSerializer):
     """
     Serializes page objects of messages.
     """
     class Meta:
-        object_serializer_class = MessageLinkSerializer
+        object_serializer_class = MessageSearchSerializer

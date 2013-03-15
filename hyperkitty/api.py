@@ -308,7 +308,7 @@ class SearchResource(APIView):
             return Response(status=404)
         else:
             return Response(
-                PaginatedMessageLinkSerializer(
+                PaginatedMessageSearchSerializer(
                     instance=threads, context={'request': request}).data)
 
 
